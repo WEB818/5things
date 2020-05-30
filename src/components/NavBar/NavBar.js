@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { StyledMenu, StyledBurger } from "./NavBar.styled";
 import styled from "styled-components";
+import TokenService from "../../services/token-service";
 
 const StyledLink = styled(Link)`
   text-decoration: none;
@@ -23,6 +24,9 @@ const Menu = ({ open, setOpen }) => {
       </StyledLink>
       <StyledLink to="/summary" onClick={() => setOpen(!open)}>
         Mood Summary
+      </StyledLink>
+      <StyledLink to="/" onClick={() => TokenService.clearAuthToken()}>
+        Log Out
       </StyledLink>
     </StyledMenu>
   );

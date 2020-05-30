@@ -1,7 +1,16 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import AuthApiService from "../services/auth-api-service";
+import TokenService from "../services/token-service";
+import styled from "styled-components";
+import { Input, Button } from "./Utils/Utils";
 
+const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20vh;
+`;
 class LoginForm extends Component {
   static defaultProps = {
     onLoginSuccess: () => {},
@@ -9,13 +18,11 @@ class LoginForm extends Component {
 
   state = { error: null };
 
-  firstInput = React.createRef();
-
   handleSubmit = (ev) => {
     ev.preventDefault();
-    const { username, password } = ev.target;
-
     this.setState({ error: null });
+
+    const { username, password } = ev.target;
 
     AuthApiService.postLogin({
       username: username.value,
@@ -24,7 +31,7 @@ class LoginForm extends Component {
       .then((res) => {
         username.value = "";
         password.value = "";
-        this.context.processLogin(res.authToken);
+        TokenService.saveAuthToken(res.authToken);
         this.props.onLoginSuccess();
       })
       .catch((res) => {
@@ -32,42 +39,26 @@ class LoginForm extends Component {
       });
   };
 
-  componentDidMount() {
-    this.firstInput.current.focus();
-  }
-
   render() {
     const { error } = this.state;
     return (
-      <form className="RegForm__container" onSubmit={this.handleSubmit}>
+      <Form onSubmit={this.handleSubmit}>
         <div role="alert">{error && <p>{error}</p>}</div>
-        <div className="RegForm__label-input">
-          <label htmlFor="login-username-input">Username</label>
-          <input
-            ref={this.firstInput}
-            id="login-username-input"
-            className="red-input"
-            name="username"
-            required
-          />
+
+        <Input name="username" required placeholder="Username" />
+
+        <Input
+          name="password"
+          type="password"
+          required
+          placeholder="Password"
+        />
+
+        <Button type="submit">Login</Button>
+        <div>
+          Don't have an account? <Link to="/register">Sign up!</Link>
         </div>
-        <div className="RegForm__label-input">
-          <label htmlFor="login-password-input">Password</label>
-          <input
-            id="login-password-input"
-            className="green-input"
-            name="password"
-            type="password"
-            required
-          />
-        </div>
-        <footer className="RegForm__footer">
-          <button type="submit">Login</button>Don't have an account?{" "}
-          <Link to="/register" className="page-links">
-            Sign up!
-          </Link>
-        </footer>
-      </form>
+      </Form>
     );
   }
 }

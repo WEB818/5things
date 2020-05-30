@@ -24,6 +24,18 @@ const AuthApiService = {
       !res.ok ? res.json().then((err) => Promise.reject(err)) : res.json()
     );
   },
+  processLogin(authToken) {
+    TokenService.saveAuthToken(authToken);
+    const jwtPayload = TokenService.parseAuthToken();
+    this.setUser({
+      id: jwtPayload.user_id,
+      name: jwtPayload.name,
+      username: jwtPayload.sub,
+    });
+    TokenService.queueCallbackBeforeExpiry(() => {
+      this.fetchRefreshToken();
+    });
+  },
   refreshToken() {
     return fetch(`${config.API_ENDPOINT}/auth/token`, {
       method: "PUT",

@@ -2,76 +2,62 @@
 
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
+import styled from "styled-components";
+import { Input, Button } from "./Utils/Utils";
 import AuthApiService from "../services/auth-api-service";
 
-class RegistrationForm extends Component {
+const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20vh;
+`;
+export default class RegistrationForm extends Component {
   static defaultProps = {
-    onRegSuccess: () => {},
+    onRegistrationSuccess: () => {},
   };
 
   state = { error: null };
 
-  firstInput = React.createRef();
-
-  handleSubmit = (ev) => {
-    ev.preventDefault();
-    const { username, password } = ev.target;
+  handleSubmit = (event) => {
+    event.preventDefault();
+    const { username, name, password } = event.target;
 
     this.setState({ error: null });
 
-    AuthApiService.postLogin({
+    AuthApiService.postUser({
       username: username.value,
+      name: name.value,
       password: password.value,
     })
-      .then((res) => {
+      .then((user) => {
         username.value = "";
+        name.value = "";
         password.value = "";
-        this.context.processLogin(res.authToken);
-        this.props.onRegSuccess();
+        this.props.onRegistrationSuccess();
       })
       .catch((res) => {
         this.setState({ error: res.error });
       });
   };
 
-  componentDidMount() {
-    this.firstInput.current.focus();
-  }
-
   render() {
     const { error } = this.state;
     return (
-      <form className="RegForm__container" onSubmit={this.handleSubmit}>
+      <Form onSubmit={this.handleSubmit}>
         <div role="alert">{error && <p>{error}</p>}</div>
-        <div className="RegForm__label-input">
-          <label htmlFor="login-username-input">Username</label>
-          <input
-            ref={this.firstInput}
-            id="login-username-input"
-            className="red-input"
-            name="username"
-            required
-          />
-        </div>
-        <div className="RegForm__label-input">
-          <label htmlFor="login-password-input">Password</label>
-          <input
-            id="login-password-input"
-            className="green-input"
-            name="password"
-            type="password"
-            required
-          />
-        </div>
-        <footer className="RegForm__footer">
-          <button type="submit">Login</button>Don't have an account?{" "}
-          <Link to="/register" className="page-links">
-            Sign up!
-          </Link>
-        </footer>
-      </form>
+
+        <Input name="name" type="text" required placeholder="First name" />
+        <Input name="username" type="text" required placeholder="Username" />
+        <Input
+          name="password"
+          type="password"
+          required
+          placeholder="Password"
+        />
+
+        <Button type="submit">Create an Account</Button>
+      </Form>
     );
   }
 }
-
-export default RegistrationForm;

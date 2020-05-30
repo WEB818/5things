@@ -6,18 +6,20 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 80px;
 `;
 
 const TimeStyle = styled.div`
-  font-size: 40px;
+  font-size: 30px;
+  margin-top: 15%;
 `;
 
 const ValidateButton = styled.button`
-  padding: 80px;
-  margin-top: 20px;
-  background-color: pink;
-  border: none;
+  background-color: #188072;
+  border: 1px solid #a8ffdc;
+  color: #a8ffdc;
+  font-size: 20px;
+  padding: 20px;
+  margin-top: 50%;
 `;
 
 export default function HomePage() {
